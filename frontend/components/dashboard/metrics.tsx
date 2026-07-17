@@ -32,6 +32,38 @@ export function Metrics({
 
   const debtLevel = getDebtLevel(totalDebtScore);
 
+  const getHealthStatus = (score: number) => {
+  if (score >= 80) {
+    return {
+      label: "Critical Priority",
+      colorClass: "text-rose-500",
+      description: "Severe code debt. Immediate refactoring is highly recommended."
+    };
+  }
+  if (score >= 60) {
+    return {
+      label: "High Priority",
+      colorClass: "text-orange-400",
+      description: "Significant code debt. Plan refactoring in the next cycle."
+    };
+  }
+  if (score >= 40) {
+    return {
+      label: "Medium Priority",
+      colorClass: "text-amber-400",
+      description: "Moderate code debt. Code is functional but has room for improvement."
+    };
+  }
+  return {
+    label: "Low Priority",
+    colorClass: "text-emerald-400",
+    description: "Your codebase is in good health."
+  };
+};
+
+// Get the correct label, color, and description based on the health score
+const { label, colorClass, description } = getHealthStatus(healthScore ?? 0);
+
   // Common card hover effect classes (without overflow-hidden to allow tooltips to overlay bounds)
   const cardClassName = "rounded-xl border border-slate-900 bg-slate-950/40 backdrop-blur-xl p-5 shadow-lg relative transition-all duration-300 ease-out hover:-translate-y-0.5 hover:border-violet-500/25 hover:bg-slate-900/60 hover:shadow-[0_12px_30px_rgba(139,92,246,0.06)] hover:brightness-105 group";
 
@@ -70,13 +102,21 @@ export function Metrics({
           </div>
 
           <div>
-            <div className="text-xl font-extrabold text-white flex items-baseline gap-1">
-              <span>{healthScore}</span>
-              <span className="text-slate-500 text-xs font-medium">/100</span>
-            </div>
-            <div className="text-xs font-semibold text-emerald-400 mt-0.5">Good</div>
-            <p className="text-[10px] text-slate-500 mt-1 leading-normal font-medium">Your codebase is in good health.</p>
-          </div>
+  <div className="text-xl font-extrabold text-white flex items-baseline gap-1">
+    <span>{healthScore}</span>
+    <span className="text-slate-500 text-xs font-medium">/100</span>
+  </div>
+  
+  {/* Dynamic Label and Color */}
+  <div className={`text-xs font-semibold mt-0.5 ${colorClass}`}>
+    {label}
+  </div>
+  
+  {/* Dynamic Description */}
+   <p className="text-[10px] text-slate-500 mt-1 leading-normal font-medium">
+    {description}
+  </p> 
+</div>
         </div>
       </div>
 
