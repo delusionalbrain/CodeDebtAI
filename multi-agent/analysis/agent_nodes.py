@@ -32,13 +32,17 @@ def contextualize_node(state: AgentState) -> dict:
 
 def report_node(state: AgentState) -> dict:
     if state.get("next_action") == "skip_to_report":
-        from shared_models import ReportOutput
+        from shared.shared_models import ReportOutput, SeverityDistribution
         report = ReportOutput(
             summary="No files flagged for review. Repository looks clean based on static analysis.",
+            health_score=100,
+            files_scanned=len(state.get("analyzed_files", [])),
+            total_debt_score=0,
+            severity_distribution=SeverityDistribution(critical=0, high=0, medium=0, low=0),
             files=[]
         )
     else:
-        report = build_report(state["flagged_files"])
+        report = build_report(state["flagged_files"], state["analyzed_files"], state["repo_path"])
 
     return {
         "report": report,

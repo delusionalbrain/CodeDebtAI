@@ -7,6 +7,8 @@ class FixState(TypedDict):
     original_code: Optional[str]
     suggested_code: Optional[str]
     diff: Optional[list[dict]]
+    flagged_lines: list[int]
+    suggested_lines: list[int]
     fix_valid: Optional[bool]
     retry_count: int
     trace: list[str]
