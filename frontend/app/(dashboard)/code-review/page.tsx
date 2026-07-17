@@ -62,12 +62,13 @@ function CodeReviewContent() {
     const fileMeta = dashboardData.files.find(f => f.file_path === selectedFileKey);
     const reason = fileMeta?.reason || "Optimize code";
     const repoUrl = sessionStorage.getItem("repoUrl") || "";
+    const httpUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
     setIsLoadingFix(true);
     setActiveReview(null);
     setEditedSuggestedCode('');
 
-    fetch("http://localhost:8000/fix", {
+    fetch(`${httpUrl}/fix`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -76,16 +77,24 @@ function CodeReviewContent() {
         issue_reason: reason
       })
     })
-      .then(res => res.json())
-      .then(data => {
-        setActiveReview(data);
-        setEditedSuggestedCode(data.suggested_code);
-        setIsLoadingFix(false);
-      })
-      .catch(err => {
-        console.error(err);
-        setIsLoadingFix(false);
-      });
+    .then(async res => {
+      if (!res.ok) {
+        const errorText = await res.text();
+        throw new Error(errorText);
+      }
+      return res.json();
+    })
+    .then(data => {
+      setActiveReview(data);
+      setEditedSuggestedCode(data.suggested_code);
+      setIsLoadingFix(false);
+    })
+    .catch(err => {
+      console.error("Fix generation error:", err);
+      alert("Failed to generate AI fix. Is your Render backend missing the GROQ_API_KEY environment variable? Or did the Render server restart and lose the cloned repo? Error: " + err.message);
+      setIsLoadingFix(false);
+      // We leave activeReview as null so it doesn't show empty editors
+    });
   }, [selectedFileKey, dashboardData]);
 
   // Synchronized scroll listeners

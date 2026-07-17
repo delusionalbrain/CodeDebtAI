@@ -7,6 +7,7 @@ from fastapi import FastAPI, HTTPException, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
+import git
 
 # --- PDF Generation Imports ---
 from reportlab.lib.pagesizes import letter
@@ -289,7 +290,8 @@ def fix_code_debt(request: APIFixRequest):
         repo_path = os.path.join(TEMP_CLONE_DIR, repo_name)
 
         if not os.path.exists(repo_path):
-            raise HTTPException(status_code=400, detail="Repository not found locally. Run /analyze first.")
+            # Render might have spun down and deleted the temp repo! Let's just clone it again.
+            git.Repo.clone_from(request.repo_url, repo_path)
 
         internal_request = FixRequest(
             file_path=request.file_path,
