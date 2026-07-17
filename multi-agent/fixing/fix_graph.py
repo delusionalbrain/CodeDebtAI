@@ -1,6 +1,6 @@
 from langgraph.graph import StateGraph, END
-from fix_state import FixState
-from fix_nodes import (
+from fixing.fix_state import FixState
+from fixing.fix_nodes import (
     read_code_node,
     generate_fix_node,
     validate_fix_node,

@@ -39,8 +39,8 @@ Original code:
 
     return code
 
-def build_diff(original_code: str, suggested_code: str) -> list[dict]:
-    """Line-by-line diff structure for the frontend +/- UI."""
+def build_diff(original_code: str, suggested_code: str) -> tuple[list[dict], list[int], list[int]]:
+    """Line-by-line diff structure and line number mapping."""
     diff_lines = list(difflib.unified_diff(
         original_code.splitlines(),
         suggested_code.splitlines(),
@@ -48,21 +48,41 @@ def build_diff(original_code: str, suggested_code: str) -> list[dict]:
     ))
 
     structured_diff = []
+    flagged_lines = []
+    suggested_lines = []
+    
+    orig_idx = 0
+    new_idx = 0
+
     for line in diff_lines:
-        if line.startswith("+") and not line.startswith("+++"):
-            structured_diff.append({"type": "add", "content": line[1:]})
+        if line.startswith("@@"):
+            # @@ -start,count +start,count @@
+            parts = line.split(" ")
+            orig_start = int(parts[1].split(",")[0].replace("-", ""))
+            new_start = int(parts[2].split(",")[0].replace("+", ""))
+            orig_idx = orig_start
+            new_idx = new_start
         elif line.startswith("-") and not line.startswith("---"):
             structured_diff.append({"type": "remove", "content": line[1:]})
-        elif not line.startswith(("+++", "---", "@@")):
+            flagged_lines.append(orig_idx)
+            orig_idx += 1
+        elif line.startswith("+") and not line.startswith("+++"):
+            structured_diff.append({"type": "add", "content": line[1:]})
+            suggested_lines.append(new_idx)
+            new_idx += 1
+        elif not line.startswith(("+++", "---")):
             structured_diff.append({"type": "context", "content": line})
+            # Context lines exist in both, so increment both counters
+            orig_idx += 1
+            new_idx += 1
 
-    return structured_diff
+    return structured_diff, flagged_lines, suggested_lines
 
 from shared.shared_models import FixRequest, FixResponse
 
 def fix_file(request: FixRequest, repo_path: str) -> FixResponse:
     """Code Fixing Agent entry point - called by backend on dropdown selection."""
-    from fix_graph import fix_graph_app  # import here to avoid circular import
+    from fixing.fix_graph import fix_graph_app  # import here to avoid circular import
 
     result = fix_graph_app.invoke({
         "repo_path": repo_path,
@@ -71,6 +91,8 @@ def fix_file(request: FixRequest, repo_path: str) -> FixResponse:
         "original_code": None,
         "suggested_code": None,
         "diff": None,
+        "flagged_lines": None,
+        "suggested_lines": None,
         "fix_valid": None,
         "retry_count": 0,
         "trace": []
@@ -80,6 +102,8 @@ def fix_file(request: FixRequest, repo_path: str) -> FixResponse:
         file_path=request.file_path,
         original_code=result["original_code"],
         suggested_code=result["suggested_code"],
+        flagged_lines=result.get("flagged_lines", []),
+        suggested_lines=result.get("suggested_lines", []),
         diff=result["diff"]
     )
 

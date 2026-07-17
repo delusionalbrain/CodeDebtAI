@@ -1,6 +1,6 @@
 import ast
-from fix_state import FixState
-from code_fixing_agent import read_file_content, generate_fix, build_diff
+from fixing.fix_state import FixState
+from fixing.code_fixing_agent import read_file_content, generate_fix, build_diff
 
 MAX_RETRIES = 3
 
@@ -38,8 +38,10 @@ def validate_fix_node(state: FixState) -> dict:
 
 
 def build_diff_node(state: FixState) -> dict:
-    diff = build_diff(state["original_code"], state["suggested_code"])
+    diff, flagged_lines, suggested_lines = build_diff(state["original_code"], state["suggested_code"])
     return {
         "diff": diff,
+        "flagged_lines": flagged_lines,
+        "suggested_lines": suggested_lines,
         "trace": state["trace"] + ["Diff built"]
     }
