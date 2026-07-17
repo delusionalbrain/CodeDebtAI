@@ -15,7 +15,7 @@ export function Header() {
       try {
         const data = JSON.parse(saved) as DashboardTelemetry;
         setDashboardData(data);
-        
+
         const repoUrl = sessionStorage.getItem("repoUrl");
         if (repoUrl) {
           const parts = repoUrl.replace(/\/$/, '').split('/');
@@ -55,14 +55,14 @@ export function Header() {
       // Convert the response to a Blob (Binary Large Object) representing the PDF
       const blob = await response.blob();
       const downloadUrl = window.URL.createObjectURL(blob);
-      
+
       // Ephemeral link creation to download file in-browser
       const downloadAnchor = document.createElement('a');
       downloadAnchor.href = downloadUrl;
       downloadAnchor.setAttribute("download", `${repoName}-analysis-report.pdf`);
       document.body.appendChild(downloadAnchor);
       downloadAnchor.click();
-      
+
       // Clean up DOM objects
       downloadAnchor.remove();
       window.URL.revokeObjectURL(downloadUrl);
