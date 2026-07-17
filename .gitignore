@@ -15,4 +15,5 @@ venv.bak/
 
 # Project specific
 backend/temp_repos/
+multi-agent/shared/temp_repos/
 scratch_repo/

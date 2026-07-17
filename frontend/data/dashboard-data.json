@@ -1,0 +1,64 @@
+{
+  "summary": "The repository contains several high-complexity files, with a significant portion having not been modified for a long time. Some frequently modified files also show high complexity, increasing maintenance cost and risk of bugs. Focus on critical and high priority files to improve maintainability and reduce technical debt.",
+  "health_score": 78,
+  "files_scanned": 342,
+  "total_debt_score": 186,
+  "severity_distribution": {
+    "critical": 4,
+    "high": 7,
+    "medium": 11,
+    "low": 5
+  },
+  "files": [
+    {
+      "line_start": 142,
+      "line_end": 198,
+      "file_path": "app.py",
+      "priority_score": 48,
+      "severity": "Critical",
+      "complexity_grade": "D",
+      "maintainability_index": 41.2,
+      "reason": "High complexity with frequent modifications."
+    },
+    {
+      "line_start": 221,
+      "line_end": 287,
+      "file_path": "data_parser.py",
+      "priority_score": 42,
+      "severity": "Critical",
+      "complexity_grade": "D",
+      "maintainability_index": 38.7,
+      "reason": "High complexity and not modified for a long time."
+    },
+    {
+      "line_start": 88,
+      "line_end": 142,
+      "file_path": "matrix_processing.py",
+      "priority_score": 35,
+      "severity": "High",
+      "complexity_grade": "C",
+      "maintainability_index": 52.1,
+      "reason": "High complexity with frequent modifications."
+    },
+    {
+      "line_start": 56,
+      "line_end": 101,
+      "file_path": "utils.py",
+      "priority_score": 22,
+      "severity": "Medium",
+      "complexity_grade": "B",
+      "maintainability_index": 67.8,
+      "reason": "Moderate complexity."
+    },
+    {
+      "line_start": 15,
+      "line_end": 48,
+      "file_path": "config.py",
+      "priority_score": 12,
+      "severity": "Low",
+      "complexity_grade": "A",
+      "maintainability_index": 82.3,
+      "reason": "Low complexity."
+    }
+  ]
+}
